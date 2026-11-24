@@ -8,39 +8,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Extract project
-        run: unzip -o V2JRS-AI-Android-Projesi.zip -d project
+        run: unzip -o V2JRS-HUD-V3-AI.zip -d project
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
+      - uses: android-actions/setup-android@v3
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
       - name: Build APK
-        run: |
-          FILE=$(find project -name settings.gradle.kts | head -n 1)
-          cd "$(dirname "$FILE")"
-          cat >> app/build.gradle.kts <<'EOF'
-
-          android {
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          }
-          EOF
-          gradle assembleDebug
+        working-directory: project
+        run: gradle assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
-          name: V2JRS-AI-APK
-          path: project/**/app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          name: V2JRS-AI-V3-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
